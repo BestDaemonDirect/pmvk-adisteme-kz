@@ -14,15 +14,34 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
+from django.conf.urls.static import static
 from django.urls import path
-from . import views
+from django.conf import settings
+from core import views
 
 urlpatterns = [
     path("", views.landing),
+    path("logout/", views.logout_user, name="logout"),
 
-    path("login", views.login),
-    path("dashboard", views.dashboard),
+    
+    # Teacher
+    path("dashboard-teacher/", views.dashboard_teacher, name="dashboard-teacher"),
+    path("dashboard-teacher/add-info", views.teacher_add_info, name="teacher-add-info"),
+    path("dashboard-teacher/edit-info", views.teacher_edit_info, name="teacher-edit-info"),
+    path("dashboard-teacher/delete-info", views.teacher_delete_info, name="teacher-delete-info"),
 
-    path('admin/', admin.site.urls),
+
+    # Admin
+    path("dashboard-admin/", views.dashboard_admin, name="dashboard-admin"),
+    path("dashboard-admin/add-teacher-profile/", views.admin_add_teacher_profile, name="add-teacher-profile"),
+    path("dashboard-admin/get-teacher-profile/<int:teacher_id>/", views.admin_get_teacher_profile, name="get-teacher-profile"),
+    path("dashboard-admin/set-teacher-password/<int:teacher_id>/", views.admin_set_teacher_password, name="set-teacher-password"),
+    path("dashboard-admin/edit-teacher-profile/<int:teacher_id>", views.admin_edit_teacher_profile, name="edit-teacher-profile"),
+    path("dashboard-admin/delete-teacher-profile/<int:teacher_id>/", views.admin_delete_teacher_profile, name="delete-teacher-profile"),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+    )

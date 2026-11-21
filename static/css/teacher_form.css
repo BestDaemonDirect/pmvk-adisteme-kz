@@ -1,0 +1,49 @@
+/* Страница добавления преподавателя
+   Подключать после main.css, form.css и dashboard.css */
+
+.form-page { padding: 12px 0 64px; }
+
+.back {
+    display: inline-block; margin-bottom: 16px;
+    color: var(--muted); font-weight: 500; font-size: .95rem;
+    transition: color .15s;
+}
+.back:hover { color: var(--brand); }
+
+.form-card { max-width: 620px; margin-inline: auto; }
+
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.opt { font-weight: 400; font-size: .8rem; color: #a5b3c5; margin-left: 4px; }
+
+.input-box textarea {
+    width: 100%; padding: 14px 16px;
+    font: inherit; color: var(--ink);
+    background: var(--bg);
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    resize: vertical; min-height: 90px;
+    transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.input-box textarea::placeholder { color: #a5b3c5; }
+.input-box textarea:focus {
+    outline: none; border-color: var(--brand); background: #fff;
+    box-shadow: 0 0 0 4px rgba(74, 125, 255, .12);
+}
+
+.actions { display: flex; gap: 12px; margin-top: 6px; }
+.actions .btn { flex: 1; }
+.btn-cancel {
+    height: 52px; padding: 0 24px;
+    display: grid; place-items: center;
+    font-weight: 600; color: var(--muted);
+    background: #fff; border: 1.5px solid var(--line); border-radius: 14px;
+    transition: border-color .15s, color .15s;
+}
+.btn-cancel:hover { border-color: var(--brand); color: var(--brand); }
+
+@media (max-width: 600px) {
+    .row { grid-template-columns: 1fr; gap: 0; }
+    .actions { flex-direction: column-reverse; }
+    .btn-cancel { width: 100%; }
+}

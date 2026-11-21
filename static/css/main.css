@@ -1,0 +1,73 @@
+/* Общие стили: переменные, шапка, главный экран, блоки, подвал */
+:root {
+    --bg: #f7faff;
+    --tint: #eef4ff;
+    --ink: #1b2a3d;
+    --muted: #6b7c92;
+    --line: #e1e9f4;
+    --brand: #4a7dff;
+    --brand-dark: #3a68e0;
+    --error: #d6455a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+    font-family: "Onest", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+}
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 3px solid rgba(74, 125, 255, .45); outline-offset: 2px; }
+.wrap { width: min(1100px, 100% - 40px); margin-inline: auto; }
+
+/* Header */
+header { padding: 22px 0; }
+header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.logo { font-weight: 700; font-size: 1.3rem; display: flex; align-items: center; gap: 10px; }
+.logo i { width: 30px; height: 30px; border-radius: 9px; background: var(--brand); display: grid; place-items: center; color: #fff; font-style: normal; font-size: .9rem; }
+nav { display: flex; gap: 28px; font-weight: 500; color: var(--muted); }
+nav a:hover { color: var(--brand); }
+
+/* Hero */
+.hero { padding: 40px 0 80px; }
+.hero .wrap { display: grid; grid-template-columns: 1.1fr .9fr; gap: 56px; align-items: center; }
+h1 { font-size: clamp(2.1rem, 5vw, 3.4rem); line-height: 1.12; font-weight: 700; letter-spacing: -.02em; max-width: 15ch; }
+.lead { margin-top: 20px; font-size: 1.08rem; color: var(--muted); max-width: 46ch; }
+.stats { margin-top: 32px; display: flex; gap: 34px; flex-wrap: wrap; }
+.stats b { display: block; font-size: 1.35rem; font-weight: 700; color: var(--brand); }
+.stats span { color: var(--muted); font-size: .9rem; }
+
+/* Features */
+.features { background: var(--tint); padding: 80px 0; }
+.features h2 { font-size: clamp(1.6rem, 3.4vw, 2.2rem); font-weight: 700; max-width: 20ch; line-height: 1.2; }
+.feat-list { margin-top: 40px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px; }
+.feat-list .ico { width: 46px; height: 46px; border-radius: 14px; background: #fff; display: grid; place-items: center; margin-bottom: 14px; color: var(--brand); box-shadow: 0 6px 16px -10px rgba(74, 125, 255, .5); }
+.feat-list svg { width: 24px; height: 24px; }
+.feat-list h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; }
+.feat-list p { color: var(--muted); font-size: .96rem; }
+
+/* About */
+.about { padding: 80px 0; }
+.about .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+.about h2 { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 700; line-height: 1.2; }
+.about p { color: var(--muted); margin-bottom: 14px; }
+
+footer { border-top: 1px solid var(--line); padding: 24px 0; color: var(--muted); font-size: .88rem; }
+footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+/* Mobile / tablet */
+@media (max-width: 900px) {
+    .hero .wrap, .about .wrap { grid-template-columns: 1fr; gap: 36px; }
+    .feat-list { grid-template-columns: 1fr; gap: 28px; }
+    h1 { max-width: none; }
+    nav { display: none; }
+    .hero { padding-bottom: 48px; }
+    .features, .about { padding: 56px 0; }
+}
+@media (max-width: 480px) {
+    .stats { gap: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; scroll-behavior: auto !important; }
+}

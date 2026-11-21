@@ -1,0 +1,59 @@
+/* Стили формы входа (подключать после main.css — использует его переменные) */
+/* Login card */
+.login {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 34px 30px;
+    box-shadow: 0 18px 40px -24px rgba(74, 125, 255, .35);
+}
+.login h2 { font-size: 1.45rem; font-weight: 700; }
+.login p.sub { color: var(--muted); margin: 4px 0 22px; font-size: .95rem; }
+.field { margin-bottom: 16px; }
+.field label { display: block; font-weight: 500; font-size: .88rem; margin-bottom: 6px; color: var(--muted); }
+.input-box { position: relative; }
+.input-box input {
+    width: 100%; height: 50px; padding: 0 16px;
+    font: inherit; color: var(--ink);
+    background: var(--bg);
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.input-box input::placeholder { color: #a5b3c5; }
+.input-box input:focus { outline: none; border-color: var(--brand); background: #fff; box-shadow: 0 0 0 4px rgba(74, 125, 255, .12); }
+.input-box.has-eye input { padding-right: 52px; }
+
+.eye {
+    position: absolute; right: 6px; top: 6px;
+    width: 38px; height: 38px;
+    border: 0; background: transparent; border-radius: 10px;
+    color: var(--muted); cursor: pointer;
+    display: grid; place-items: center;
+}
+.eye:hover { color: var(--brand); background: var(--tint); }
+.eye svg { width: 21px; height: 21px; }
+/* Пароль скрыт -> перечёркнутый глаз. Пароль виден -> открытый глаз */
+.eye .open { display: none; }
+.eye.shown .open { display: block; }
+.eye.shown .closed { display: none; }
+
+.btn {
+    width: 100%; height: 52px;
+    border: 0; border-radius: 14px;
+    background: var(--brand); color: #fff;
+    font: inherit; font-weight: 600; font-size: 1rem;
+    cursor: pointer;
+    transition: background .15s, transform .1s;
+}
+.btn:hover { background: var(--brand-dark); }
+.btn:active { transform: scale(.99); }
+.btn:disabled { opacity: .65; cursor: wait; }
+
+.msg { margin-bottom: 16px; padding: 12px 14px; border-radius: 12px; font-size: .92rem; font-weight: 500; }
+.msg.error { background: #fff1f3; color: var(--error); border: 1px solid #f9d3d9; }
+
+/* Mobile */
+@media (max-width: 480px) {
+    .login { padding: 26px 20px; border-radius: 18px; }
+}
