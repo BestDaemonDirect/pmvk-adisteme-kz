@@ -54,6 +54,8 @@
                         <th>#</th>
                         <th>Преподаватель</th>
                         <th>Логин</th>
+                        <th>Имя</th>
+                        <th>Фамилия</th>
                         <th>Email</th>
                         <th class="col-actions">Действия</th>
                     </tr>
@@ -61,7 +63,7 @@
                 <tbody>
                 {% for teacher in teachers %}
                     {% with name=teacher.user.get_full_name|default:teacher.user.username %}
-                    <tr data-search="{{ name|lower }} {{ teacher.user.username|lower }}">
+                    <tr data-search="{{ name|lower }} {{ teacher.user.username|lower }} {{ teacher.user.first_name|lower }} {{ teacher.user.last_name|lower }}">
                         <td data-label="#">{{ forloop.counter }}</td>
                         <td data-label="Преподаватель">
                             <a href="{% url 'get-teacher-profile' teacher.id %}" class="person">
@@ -70,10 +72,12 @@
                             </a>
                         </td>
                         <td data-label="Логин"><a href="{% url 'get-teacher-profile' teacher.id %}" class="link">{{ teacher.user.username }}</a></td>
+                        <td data-label="Имя">{{ teacher.user.first_name|default:"—" }}</td>
+                        <td data-label="Фамилия">{{ teacher.user.last_name|default:"—" }}</td>
                         <td data-label="Email">{{ teacher.user.email|default:"—" }}</td>
                         <td data-label="Действия" class="col-actions">
                             <form method="post" action="{% url 'delete-teacher-profile' teacher.id %}"
-                                  onsubmit="return confirm('Удалить преподавателя {{ name|escapejs }}? Это действие нельзя отменить.');">
+                                onsubmit="return confirm('Удалить преподавателя {{ name|escapejs }}? Это действие нельзя отменить.');">
                                 {% csrf_token %}
                                 <button type="submit" class="btn-delete">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/></svg>

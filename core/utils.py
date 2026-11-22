@@ -27,7 +27,10 @@ def require_role(is_admin=True):
 
     
             if teacher.is_admin != is_admin:
-                return redirect("/")
+                if teacher.is_admin:
+                    return redirect("dashboard-admin")
+                else:
+                    return redirect("dashboard-teacher")
 
             
             return view_func(request, *args, **kwargs)

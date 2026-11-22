@@ -17,8 +17,8 @@ LANDING = "landing.html"
 # Landing and logout
 def landing(request: HttpRequest) -> HttpResponse:  
     if request.method.upper() == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
+        username = request.POST.get("username", "").strip()
+        password = request.POST.get("password", "").strip()
 
         if not username or not password:
             return render(request, LANDING, context={"fail": "Введите имя пользователя или пароль."})
@@ -97,12 +97,15 @@ def dashboard_admin(request: HttpRequest) -> HttpResponse:
 @require_admin
 def admin_add_teacher_profile(request: HttpRequest) -> HttpResponse:
     if request.method.upper() == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
+        username = request.POST.get("username", "").strip()
+        password = request.POST.get("password", "").strip()
 
-        email = request.POST.get("email", "")
-        phone = request.POST.get("phone", "")
-        address = request.POST.get("address", "")
+        first_name = request.POST.get("first_name", "").strip()
+        last_name = request.POST.get("last_name", "").strip()
+
+        email = request.POST.get("email", "").strip()
+        phone = request.POST.get("phone", "").strip()
+        address = request.POST.get("address", "").strip()
 
         if not username or not password:
             return render(request, ADMIN_DIR + "add_teacher_profile.html", {"fail": "Введите имя пользователя или пароль."})
@@ -116,7 +119,7 @@ def admin_add_teacher_profile(request: HttpRequest) -> HttpResponse:
 
         try:
             with transaction.atomic():
-                user = User.objects.create_user(username=username, email=email, password=password)
+                user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name, last_name=last_name)
 
                 TeacherProfile.objects.create(user=user, phone=phone, address=address, is_admin=False)
         except IntegrityError:
@@ -132,15 +135,69 @@ def admin_add_teacher_profile(request: HttpRequest) -> HttpResponse:
 def admin_get_teacher_profile(request: HttpRequest, teacher_id: int) -> HttpResponse:
     teacher = get_object_or_404(TeacherProfile, id=teacher_id)
 
-    return render(request, ADMIN_DIR + "get_teacher_profile.html", {"teacher": teacher})
+    context = {"teacher": teacher}
+
+    return render(request, ADMIN_DIR + "get_teacher_profile.html", context)
 
 @require_admin
 def admin_set_teacher_password(request: HttpRequest, teacher_id: int) -> HttpResponse:
-    return render(request, ADMIN_DIR + "set_teacher_password.html")
+    teacher = get_object_or_404(TeacherProfile, id=teacher_id)
+
+    if request.method.upper() == "POST":
+        password = request.POST.get("password", "").strip()
+
+        if not password:
+            return render(request, ADMIN_DIR + "set_teacher_password.html", {"fail": "Введите пароль.", "teacher": teacher})
+
+        if not validate_password(password):
+            return render(request, ADMIN_DIR + "set_teacher_password.html", 
+                          {"teacher": teacher, "fail": "Пароль должен быть не меньше 8 символов и не больше 25 символов"})
+
+        teacher.user.set_password(password)
+        teacher.user.save()
+
+        return redirect("get-teacher-profile", teacher_id=teacher.id)
+        
+    return render(request, ADMIN_DIR + "set_teacher_password.html", {"teacher": teacher})
 
 @require_admin
 def admin_edit_teacher_profile(request: HttpRequest, teacher_id: int) -> HttpResponse:
-    return render(request, ADMIN_DIR + "edit_teacher_profile.html")
+    teacher = get_object_or_404(TeacherProfile, id=teacher_id)
+
+    if request.method.upper() == "POST":
+        username = request.POST.get("username", "").strip()
+        first_name = request.POST.get("first_name", "").strip()
+        last_name = request.POST.get("last_name", "").strip()
+
+        email = request.POST.get("email", "").strip()
+        phone = request.POST.get("phone", "").strip()
+        address = request.POST.get("address", "").strip()
+
+        if not username:
+            return render(request, ADMIN_DIR + "edit_teacher_profile.html", 
+                          {"teacher": teacher, "fail": "Имя пользователя обязателен."})
+
+        try:
+            with transaction.atomic():
+                teacher.user.username = username
+                teacher.user.first_name = first_name
+                teacher.user.last_name = last_name
+                teacher.user.email = email
+
+                teacher.user.save()
+
+                teacher.phone = phone
+                teacher.address = address
+                teacher.save()
+
+        except IntegrityError:
+            return render(request, ADMIN_DIR + "edit_teacher_profile.html", 
+                          {"teacher": teacher, "fail": "Возникла ошибка при изменениях данных."})
+
+        return redirect("get-teacher-profile", teacher_id=teacher.id)
+
+        
+    return render(request, ADMIN_DIR + "edit_teacher_profile.html", {"teacher": teacher})
 
 
 @require_admin
