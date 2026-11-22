@@ -32,6 +32,7 @@ def require_role(is_admin=True):
                 else:
                     return redirect("dashboard-teacher")
 
+            request.teacher = teacher
             
             return view_func(request, *args, **kwargs)
         return wrapper

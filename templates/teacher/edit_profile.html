@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактирование профиля — PMVK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/teacher_form.css' %}">
+    <style>
+        .edit {
+            --p-accent: #4f46e5;        /* ← цвет основной кнопки, поменяйте на цвет вашего сайта */
+            --p-accent-hover: #4338ca;
+            --p-line: rgba(128, 128, 128, .22);
+            --p-soft: rgba(128, 128, 128, .08);
+        }
+
+        .edit-head { display: flex; align-items: center; gap: 16px; padding-bottom: 24px; margin-bottom: 24px; border-bottom: 1px solid var(--p-line); }
+        .edit-head .avatar { width: 56px; height: 56px; font-size: 24px; flex-shrink: 0; }
+        .edit-head h2 { margin: 0; line-height: 1.2; }
+        .edit-head .sub { margin: 4px 0 0; opacity: .65; word-break: break-word; }
+
+        .edit-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--p-line); }
+
+        .pbtn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            height: 44px; padding: 0 22px;
+            border-radius: 10px; border: 1px solid var(--p-line);
+            background: transparent; color: inherit;
+            font: inherit; font-size: 15px; font-weight: 600; line-height: 1;
+            text-decoration: none; cursor: pointer; white-space: nowrap;
+            transition: background .15s, border-color .15s, transform .05s;
+        }
+        .pbtn svg { width: 18px; height: 18px; flex-shrink: 0; }
+        .pbtn:hover { background: var(--p-soft); border-color: rgba(128, 128, 128, .45); }
+        .pbtn:active { transform: translateY(1px); }
+        .pbtn:disabled { opacity: .6; cursor: default; }
+        .pbtn-primary { background: var(--p-accent); border-color: var(--p-accent); color: #fff; }
+        .pbtn-primary:hover { background: var(--p-accent-hover); border-color: var(--p-accent-hover); }
+
+        @media (max-width: 640px) {
+            .edit-actions { flex-direction: column-reverse; align-items: stretch; }
+            .pbtn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="wrap">
+        <a href="{% url 'dashboard-teacher' %}" class="logo"><i>P</i> PMVK</a>
+        <div class="user-box">
+            <span class="user-name">{{ request.user.get_username }}</span>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-ghost">Выйти</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<main class="form-page">
+    <div class="wrap">
+        <a href="{% url 'dashboard-teacher' %}" class="back">← В кабинет</a>
+
+        {% with name=teacher.user.get_full_name|default:teacher.user.username %}
+        <div class="login form-card edit">
+
+            <div class="edit-head">
+                <span class="avatar">{{ name|first|upper }}</span>
+                <div>
+                    <h2>Редактирование профиля</h2>
+                    <p class="sub">{{ name }} · @{{ teacher.user.username }}</p>
+                </div>
+            </div>
+
+            {% if fail %}
+                <div class="msg error" role="alert" style="margin-bottom:20px;">{{ fail }}</div>
+            {% endif %}
+
+            <form method="post" id="profileForm" style="margin-top:0;">
+                {% csrf_token %}
+
+                <div class="row">
+                    <div class="field">
+                        <label for="email">Email <span class="opt">необязательно</span></label>
+                        <div class="input-box">
+                            <input type="email" id="email" name="email" autocomplete="off"
+                                   value="{% if request.method == 'POST' %}{{ request.POST.email }}{% else %}{{ teacher.user.email }}{% endif %}"
+                                   placeholder="name@example.com">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="phone">Телефон <span class="opt">необязательно</span></label>
+                        <div class="input-box">
+                            <input type="tel" id="phone" name="phone" autocomplete="off"
+                                   value="{% if request.method == 'POST' %}{{ request.POST.phone }}{% else %}{{ teacher.phone|default_if_none:'' }}{% endif %}"
+                                   placeholder="+7 700 000 00 00">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="address">Адрес <span class="opt">необязательно</span></label>
+                    <div class="input-box">
+                        <textarea id="address" name="address" rows="3" placeholder="Город, улица, дом">{% if request.method == 'POST' %}{{ request.POST.address }}{% else %}{{ teacher.address|default_if_none:'' }}{% endif %}</textarea>
+                    </div>
+                </div>
+
+                <div class="edit-actions">
+                    <a href="{% url 'dashboard-teacher' %}" class="pbtn">Отмена</a>
+                    <button type="submit" class="pbtn pbtn-primary" id="submitBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                        Сохранить
+                    </button>
+                </div>
+            </form>
+        </div>
+        {% endwith %}
+    </div>
+</main>
+
+<footer>
+    <div class="wrap">
+        <span>© <span id="year"></span> PMVK</span>
+        <span>Кабинет преподавателя</span>
+    </div>
+</footer>
+
+<script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Защита от двойной отправки
+    document.getElementById('profileForm').addEventListener('submit', () => {
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.textContent = 'Сохраняем…';
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новый материал — PMVK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form.css' %}">
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/teacher_form.css' %}">
+    <style>
+        .edit {
+            --p-accent: #4f46e5;        /* ← цвет основной кнопки, поменяйте на цвет вашего сайта */
+            --p-accent-hover: #4338ca;
+            --p-line: rgba(128, 128, 128, .22);
+            --p-soft: rgba(128, 128, 128, .08);
+        }
+
+        .edit-head { display: flex; align-items: center; gap: 16px; padding-bottom: 24px; margin-bottom: 24px; border-bottom: 1px solid var(--p-line); }
+        .edit-head .icon { width: 56px; height: 56px; flex-shrink: 0; display: grid; place-items: center; border-radius: 14px; background: rgba(79, 70, 229, .14); color: var(--p-accent); }
+        .edit-head .icon svg { width: 26px; height: 26px; }
+        .edit-head h2 { margin: 0; line-height: 1.2; }
+        .edit-head .sub { margin: 4px 0 0; opacity: .65; }
+
+        .hint { margin: 8px 0 0; font-size: 13px; opacity: .6; }
+
+        /* Загрузка файла */
+        .file-drop {
+            position: relative; display: flex; align-items: center; gap: 14px;
+            padding: 18px; border: 1.5px dashed rgba(128, 128, 128, .45); border-radius: 12px;
+            cursor: pointer; transition: background .15s, border-color .15s;
+        }
+        .file-drop:hover, .file-drop.drag { background: var(--p-soft); border-color: var(--p-accent); }
+        .file-drop input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .file-drop .fi { width: 44px; height: 44px; flex-shrink: 0; display: grid; place-items: center; border-radius: 10px; background: var(--p-soft); }
+        .file-drop .fi svg { width: 22px; height: 22px; }
+        .file-drop .ft { min-width: 0; }
+        .file-drop .ft b { display: block; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .file-drop .ft span { font-size: 13px; opacity: .6; }
+        .file-drop.has-file { border-style: solid; border-color: var(--p-accent); }
+
+        .edit-actions { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--p-line); }
+
+        .pbtn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            height: 44px; padding: 0 22px;
+            border-radius: 10px; border: 1px solid var(--p-line);
+            background: transparent; color: inherit;
+            font: inherit; font-size: 15px; font-weight: 600; line-height: 1;
+            text-decoration: none; cursor: pointer; white-space: nowrap;
+            transition: background .15s, border-color .15s, transform .05s;
+        }
+        .pbtn svg { width: 18px; height: 18px; flex-shrink: 0; }
+        .pbtn:hover { background: var(--p-soft); border-color: rgba(128, 128, 128, .45); }
+        .pbtn:active { transform: translateY(1px); }
+        .pbtn:disabled { opacity: .6; cursor: default; }
+        .pbtn-primary { background: var(--p-accent); border-color: var(--p-accent); color: #fff; }
+        .pbtn-primary:hover { background: var(--p-accent-hover); border-color: var(--p-accent-hover); }
+
+        @media (max-width: 640px) {
+            .edit-actions { flex-direction: column-reverse; align-items: stretch; }
+            .pbtn { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="wrap">
+        <a href="{% url 'dashboard-teacher' %}" class="logo"><i>P</i> PMVK</a>
+        <div class="user-box">
+            <span class="user-name">{{ request.user.get_username }}</span>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-ghost">Выйти</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<main class="form-page">
+    <div class="wrap">
+        <a href="{% url 'dashboard-teacher' %}" class="back">← К моим материалам</a>
+
+        <div class="login form-card edit">
+
+            <div class="edit-head">
+                <span class="icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 11v6M9 14h6"/></svg>
+                </span>
+                <div>
+                    <h2>Новый материал</h2>
+                    <p class="sub">Добавьте название, описание и при необходимости файл</p>
+                </div>
+            </div>
+
+            {% if fail %}
+                <div class="msg error" role="alert" style="margin-bottom:20px;">{{ fail }}</div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data" id="infoForm" style="margin-top:0;">
+                {% csrf_token %}
+
+                <div class="field">
+                    <label for="title">Название</label>
+                    <div class="input-box">
+                        <input type="text" id="title" name="title" required maxlength="255" autocomplete="off"
+                               value="{{ request.POST.title }}" placeholder="Например, Программа курса">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="description">Описание <span class="opt">необязательно</span></label>
+                    <div class="input-box">
+                        <textarea id="description" name="description" rows="5" placeholder="Кратко опишите материал">{{ request.POST.description }}</textarea>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Файл <span class="opt">необязательно</span></label>
+                    <label class="file-drop" id="fileDrop" for="file">
+                        <input type="file" id="file" name="file">
+                        <span class="fi">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                        </span>
+                        <span class="ft">
+                            <b id="fileName">Выберите файл или перетащите сюда</b>
+                            <span id="fileSize">Любой формат</span>
+                        </span>
+                    </label>
+                    <p class="hint">Файл нужно выбрать заново, если страница перезагрузилась с ошибкой.</p>
+                </div>
+
+                <div class="edit-actions">
+                    <a href="{% url 'dashboard-teacher' %}" class="pbtn">Отмена</a>
+                    <button type="submit" class="pbtn pbtn-primary" id="submitBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                        Добавить
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <div class="wrap">
+        <span>© <span id="year"></span> PMVK</span>
+        <span>Кабинет преподавателя</span>
+    </div>
+</footer>
+
+<script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const fileInput = document.getElementById('file');
+    const drop = document.getElementById('fileDrop');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+
+    function formatSize(bytes) {
+        if (bytes < 1024) return bytes + ' Б';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' КБ';
+        return (bytes / 1024 / 1024).toFixed(1) + ' МБ';
+    }
+
+    function showFile() {
+        const f = fileInput.files[0];
+        if (f) {
+            fileName.textContent = f.name;
+            fileSize.textContent = formatSize(f.size);
+            drop.classList.add('has-file');
+        } else {
+            fileName.textContent = 'Выберите файл или перетащите сюда';
+            fileSize.textContent = 'Любой формат';
+            drop.classList.remove('has-file');
+        }
+    }
+
+    fileInput.addEventListener('change', showFile);
+    ['dragenter', 'dragover'].forEach(e => drop.addEventListener(e, () => drop.classList.add('drag')));
+    ['dragleave', 'drop'].forEach(e => drop.addEventListener(e, () => drop.classList.remove('drag')));
+
+    // Защита от двойной отправки
+    document.getElementById('infoForm').addEventListener('submit', () => {
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.textContent = 'Сохраняем…';
+    });
+</script>
+</body>
+</html>

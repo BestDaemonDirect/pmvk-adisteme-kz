@@ -26,9 +26,10 @@ urlpatterns = [
     
     # Teacher
     path("dashboard-teacher/", views.dashboard_teacher, name="dashboard-teacher"),
-    path("dashboard-teacher/add-info", views.teacher_add_info, name="teacher-add-info"),
-    path("dashboard-teacher/edit-info", views.teacher_edit_info, name="teacher-edit-info"),
-    path("dashboard-teacher/delete-info", views.teacher_delete_info, name="teacher-delete-info"),
+    path("dashboard-teacher/edit-profile", views.teacher_edit_profile, name="teacher-edit-profile"),
+    path("dashboard-teacher/add-info/", views.teacher_add_info, name="teacher-add-info"),
+    path("dashboard-teacher/edit-info/<int:info_id>/", views.teacher_edit_info, name="teacher-edit-info"),
+    path("dashboard-teacher/delete-info/<int:info_id>/", views.teacher_delete_info, name="teacher-delete-info"),
 
 
     # Admin
