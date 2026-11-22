@@ -17,46 +17,62 @@ def generate_password(length=14):
 
 
 
-# Создаем администратора
-username = input("Напишите свой юсернэйм: ")
-email = input("Напишите свой email: ")
-phone = input("Можете вести свой телефон (Опционально): ")
-address = input("Можете вести свой адресс (Опционально): ")
+def create_account(username, password, first_name, last_name, email, phone, address, is_admin):
+    if User.objects.filter(username=username).exists():
+        print(f"Такой пользователь с {username} уже существует.")
+        return
+    
+    if User.objects.filter(email=email).exists():
+        print(f"Такой пользователь с такой почтой {email} уже существует.")
+        return
+
+    try: 
+        with transaction.atomic():
+
+            user_instance = User.objects.create_user(username=username, email=email, password=password,
+                first_name=first_name, last_name=last_name, is_staff=True
+            )
 
 
-# Проверка на дубликат
-if User.objects.filter(username=username).exists():
-    raise ProcessLookupError(f"Такой пользователь с {username} уже существует.")
-if User.objects.filter(email=email).exists():
-    raise ProcessLookupError(f"Такой пользователь с такой почтой {email} уже существует.")
+            TeacherProfile.objects.create(user=user_instance, is_admin=is_admin, phone=phone, address=address)
+
+    except IntegrityError:
+        print(f"{username}: возникла ошибка при создание аккаунта.")
+        return
+
+    print(f"Пароль: {password} - Логин: {username}")
 
 
+accounts = [
+    {
+        "username": "admin", "password": generate_password(),
+        "first_name": "Александр", "last_name": "Иванов",
+        "email": "admin@example.com", "phone": "+77001234567", "address": "Атырау",
+        "is_admin": True,
+    },
+    {
+        "username": "teacher1", "password": generate_password(),
+        "first_name": "Дмитрий", "last_name": "Соколов",
+        "email": "teacher1@example.com", "phone": "+77001234568", "address": "Атырау",
+        "is_admin": False,
+    },
+    {
+        "username": "teacher2", "password": generate_password(),
+        "first_name": "Мария", "last_name": "Петрова",
+        "email": "teacher2@example.com", "phone": "+77001234569","address": "Атырау",
+        "is_admin": False,
+    },
+    {
+        "username": "teacher3", "password": generate_password(),
+        "first_name": "Иван", "last_name": "Кузнецов",
+        "email": "teacher3@example.com", "phone": "+77001234560", "address": "Атырау",
+        "is_admin": False,
+    },
+]
 
-password = generate_password(length=15)
-
-try: 
-    with transaction.atomic():
-
-        # Создаем экземпляр User
-        user_instance = User.objects.create_user(
-            username=username, email=email, password=password,
-            first_name=username, last_name="Администратор ПВМК", is_staff=True
-        )
-
-
-        # Создаем наш экземпляр TeacherProfile
-        teacher_instance = TeacherProfile.objects.create(
-            user=user_instance, is_admin=True, phone=phone, address=address
-        )
-
-except IntegrityError:
-    raise ProcessLookupError("Аккаунт не создан")
-
-
-print(f"Пароль: {password} - Логин: {username}")
-
-
-
+for account in accounts:
+    create_account(**account)
+    
 
 
 
