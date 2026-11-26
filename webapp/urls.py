@@ -18,6 +18,7 @@ from django.conf.urls.static import static
 from django.urls import path
 from django.conf import settings
 from core import views
+from . import error_views
 
 urlpatterns = [
     path("", views.landing),
@@ -42,7 +43,79 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(
-        settings.MEDIA_URL,
-        document_root=settings.MEDIA_ROOT
-    )
+    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+    from django.contrib import admin
+
+    admin.site.site_header = "PMVK — Управление"
+    admin.site.site_title = "PMVK"
+    admin.site.index_title = "Панель администратора"
+
+    urlpatterns += staticfiles_urlpatterns()
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+    urlpatterns += [path("admin/", admin.site.urls)]
+    urlpatterns += [path("http-code/<int:code>/", error_views.preview_error, name="preview-http-code")]
+
+
+handler100 = error_views.handler100
+handler101 = error_views.handler101
+handler102 = error_views.handler102
+handler103 = error_views.handler103
+handler200 = error_views.handler200
+handler201 = error_views.handler201
+handler202 = error_views.handler202
+handler203 = error_views.handler203
+handler204 = error_views.handler204
+handler205 = error_views.handler205
+handler206 = error_views.handler206
+handler207 = error_views.handler207
+handler208 = error_views.handler208
+handler226 = error_views.handler226
+handler300 = error_views.handler300
+handler301 = error_views.handler301
+handler302 = error_views.handler302
+handler303 = error_views.handler303
+handler304 = error_views.handler304
+handler305 = error_views.handler305
+handler307 = error_views.handler307
+handler308 = error_views.handler308
+handler400 = error_views.handler400
+handler401 = error_views.handler401
+handler402 = error_views.handler402
+handler403 = error_views.handler403
+handler404 = error_views.handler404
+handler405 = error_views.handler405
+handler406 = error_views.handler406
+handler407 = error_views.handler407
+handler408 = error_views.handler408
+handler409 = error_views.handler409
+handler410 = error_views.handler410
+handler411 = error_views.handler411
+handler412 = error_views.handler412
+handler413 = error_views.handler413
+handler414 = error_views.handler414
+handler415 = error_views.handler415
+handler416 = error_views.handler416
+handler417 = error_views.handler417
+handler418 = error_views.handler418
+handler421 = error_views.handler421
+handler422 = error_views.handler422
+handler423 = error_views.handler423
+handler424 = error_views.handler424
+handler425 = error_views.handler425
+handler426 = error_views.handler426
+handler428 = error_views.handler428
+handler429 = error_views.handler429
+handler431 = error_views.handler431
+handler451 = error_views.handler451
+handler500 = error_views.handler500
+handler501 = error_views.handler501
+handler502 = error_views.handler502
+handler503 = error_views.handler503
+handler504 = error_views.handler504
+handler505 = error_views.handler505
+handler506 = error_views.handler506
+handler507 = error_views.handler507
+handler508 = error_views.handler508
+handler510 = error_views.handler510
+handler511 = error_views.handler511

@@ -30,7 +30,7 @@ def create_account(username, password, first_name, last_name, email, phone, addr
         with transaction.atomic():
 
             user_instance = User.objects.create_user(username=username, email=email, password=password,
-                first_name=first_name, last_name=last_name, is_staff=True
+                first_name=first_name, last_name=last_name, is_staff=True, is_superuser=is_admin
             )
 
 
